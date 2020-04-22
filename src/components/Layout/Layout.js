@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import { Route, Switch } from 'react-router-dom';
 import Aux from '../../hoc/Aux';
 import BurgerBuilder from '../../containers/BurgerBuilder/BurgerBuilder';
 import Toolbar from '../Navigation/Toolbar/Toolbar';
 import SideDrawer from '../Navigation/SideDrawer/SideDrawer';
+import Checkout from '../../containers/Checkout/Checkout';
 import classes from './Layout.module.css';
-
+import Orders from '../../containers/Orders/Orders';
 class Layout extends Component {
 
   state = {
@@ -30,7 +32,11 @@ class Layout extends Component {
           closed={this.sideDrawerClosedHandler}
         />
         <main className={classes.Content}>
-          <BurgerBuilder />
+          <Switch>
+            <Route path='/checkout' component={Checkout} />
+            <Route path='/orders' component={Orders} />
+            <Route path="/" component={BurgerBuilder} />
+          </Switch>
         </main>
       </Aux >
     );
