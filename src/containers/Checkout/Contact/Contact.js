@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import axios from '../../../axios-orders';
 import Button from '../../../components/UI/Button/Button';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
+import * as actions from '../../../store/actions/order';
 import classes from './Contact.module.css';
 
 class Contact extends Component {
@@ -76,16 +79,17 @@ class Contact extends Component {
           { value: 'cheapest', displayValue: 'Cheapest' },
           { value: 'normal', displayValue: 'Normal' }]
         },
-        value: '',
+        value: 'fastest',
         valid: false,
       }
     },
-    loading: false,
   }
 
   checkValidity = (input, value, rules) => {
     let isValid = true;
-    console.log(input);
+    if (!rules) {
+      return true;
+    }
     if (input !== 'select') {
       if (rules.required) {
         isValid = value.trim() !== '' && isValid;
@@ -112,8 +116,8 @@ class Contact extends Component {
   };
 
   orderHandler = event => {
+    const { onPurchaseBurger } = this.props;
     event.preventDefault();
-    this.setState({ loading: true });
     const formData = {};
     for (let formElementIdentifier in this.state.orderForm) {
       formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value;
@@ -123,19 +127,11 @@ class Contact extends Component {
       price: this.props.totalPrice,
       orderData: formData,
     };
-
-    axios.post('/orders.json', order)
-      .then(response => {
-        this.setState({ loading: false });
-        this.props.history.push('/');
-      })
-      .catch(error =>
-        this.setState({ loading: false })
-      );
-
+    onPurchaseBurger(order);
   };
 
   render() {
+    const { loading } = this.props;
     const formElementsArray = [];
     for (let key in this.state.orderForm) {
       formElementsArray.push({
@@ -160,7 +156,7 @@ class Contact extends Component {
       </form>
     );
 
-    if (this.state.loading) {
+    if (loading) {
       form = <Spinner />;
     }
     return (
@@ -172,4 +168,18 @@ class Contact extends Component {
   }
 }
 
-export default Contact;
+const mapStateToProps = state => {
+  return {
+    ingredients: state.burgerBuilder.ingredients,
+    totalPrice: state.burgerBuilder.totalPrice,
+    loading: state.order.loading,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onPurchaseBurger: orderData => dispatch(actions.purchaseBurger(orderData)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(Contact, axios));
