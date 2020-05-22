@@ -152,7 +152,7 @@ class Contact extends Component {
             changed={(event) => this.inputChangedHandler(event, formElement.id)}
           />
         ))}
-        <Button type="Success" clicked={this.orderHandler}>ORDER</Button>
+        <Button type="Success">ORDER</Button>
       </form>
     );
 
