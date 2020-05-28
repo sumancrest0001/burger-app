@@ -7,6 +7,10 @@ import SideDrawer from '../Navigation/SideDrawer/SideDrawer';
 import Checkout from '../../containers/Checkout/Checkout';
 import classes from './Layout.module.css';
 import Orders from '../../containers/Orders/Orders';
+import Auth from '../../containers/Auth/Auth';
+import Logout from '../../containers/Auth/Logout/Logout';
+import { connect } from 'react-redux';
+
 class Layout extends Component {
 
   state = {
@@ -24,17 +28,24 @@ class Layout extends Component {
   }
 
   render() {
+    const { isAuthenticated } = this.props;
     return (
       <Aux>
-        <Toolbar drawerToggleClicked={this.sideDrawerToggleHandler} />
+        <Toolbar
+          isAuth={isAuthenticated}
+          drawerToggleClicked={this.sideDrawerToggleHandler}
+        />
         <SideDrawer
           open={this.state.showSideDrawer}
           closed={this.sideDrawerClosedHandler}
+          isAuth={isAuthenticated}
         />
         <main className={classes.Content}>
           <Switch>
             <Route path='/checkout' component={Checkout} />
             <Route path='/orders' component={Orders} />
+            <Route path='/auth' component={Auth} />
+            <Route path='/logout' component={Logout} />
             <Route path="/" component={BurgerBuilder} />
           </Switch>
         </main>
@@ -43,4 +54,10 @@ class Layout extends Component {
   }
 };
 
-export default Layout;
+const mapStateToProps = state => {
+  return {
+    isAuthenticated: state.auth.token != null,
+  }
+}
+
+export default connect(mapStateToProps)(Layout);

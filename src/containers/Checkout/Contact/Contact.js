@@ -116,7 +116,7 @@ class Contact extends Component {
   };
 
   orderHandler = event => {
-    const { onPurchaseBurger } = this.props;
+    const { onPurchaseBurger, token } = this.props;
     event.preventDefault();
     const formData = {};
     for (let formElementIdentifier in this.state.orderForm) {
@@ -127,7 +127,8 @@ class Contact extends Component {
       price: this.props.totalPrice,
       orderData: formData,
     };
-    onPurchaseBurger(order);
+    console.log(order);
+    onPurchaseBurger(order, token);
   };
 
   render() {
@@ -173,12 +174,13 @@ const mapStateToProps = state => {
     ingredients: state.burgerBuilder.ingredients,
     totalPrice: state.burgerBuilder.totalPrice,
     loading: state.order.loading,
+    token: state.auth.token,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    onPurchaseBurger: orderData => dispatch(actions.purchaseBurger(orderData)),
+    onPurchaseBurger: (orderData, token) => dispatch(actions.purchaseBurger(orderData, token)),
   };
 };
 
