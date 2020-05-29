@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import Aux from '../../hoc/Aux';
 import BurgerBuilder from '../../containers/BurgerBuilder/BurgerBuilder';
 import Toolbar from '../Navigation/Toolbar/Toolbar';
@@ -29,6 +29,26 @@ class Layout extends Component {
 
   render() {
     const { isAuthenticated } = this.props;
+
+    let routes = (
+      <Switch>
+        <Route path='/auth' component={Auth} />
+        <Route path="/" component={BurgerBuilder} />
+        <Redirect to="/" />
+      </Switch>
+    )
+
+    if (isAuthenticated) {
+      routes = (
+        <Switch>
+          <Route path='/checkout' component={Checkout} />
+          <Route path='/orders' component={Orders} />
+          <Route path='/logout' component={Logout} />
+          <Route path="/" component={BurgerBuilder} />
+          <Redirect to="/" />
+        </Switch>
+      )
+    }
     return (
       <Aux>
         <Toolbar
@@ -41,13 +61,9 @@ class Layout extends Component {
           isAuth={isAuthenticated}
         />
         <main className={classes.Content}>
-          <Switch>
-            <Route path='/checkout' component={Checkout} />
-            <Route path='/orders' component={Orders} />
-            <Route path='/auth' component={Auth} />
-            <Route path='/logout' component={Logout} />
-            <Route path="/" component={BurgerBuilder} />
-          </Switch>
+          {
+            routes
+          }
         </main>
       </Aux >
     );
